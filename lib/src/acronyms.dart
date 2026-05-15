@@ -7,7 +7,9 @@ const Map<String, String> acronyms = {
   'nasa': 'na-sa',
   'tnhh': 'trách nhiệm hữu hạn',
   'clb': 'câu lạc bộ',
+  'tand': 'tòa án nhân dân',
+  'vksnd': 'viện kiểm sát nhân dân',
+  'fbi': 'ép-bi-ai',
   'tv': 'Ti vi',
-  'ai': 'ây ai',
   'ml': 'em meo',
 };
