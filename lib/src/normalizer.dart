@@ -210,14 +210,18 @@ class VietnameseNormalizer {
     // Step 2: handle uppercase codes before lowercasing
     normalized = _handleUppercaseCodes(normalized);
 
-    // Step 3: lowercase for consistent dictionary lookup
-    normalized = normalized.toLowerCase();
-
-    // Steps 4 & 5: replace words from dictionary
+    // Steps 4 & 5: replace words from dictionary (case-insensitive; initial cap preserved)
     if (_replacements.isNotEmpty) {
       normalized = normalized.replaceAllMapped(RegExp(r'\b\w+\b'), (m) {
         final word = m.group(0)!;
-        return _replacements[word] ?? word;
+        final replacement = _replacements[word.toLowerCase()];
+        if (replacement == null) {
+          return word;
+        }
+        if (word[0] != word[0].toLowerCase()) {
+          return replacement[0].toUpperCase() + replacement.substring(1);
+        }
+        return replacement;
       });
     }
 
