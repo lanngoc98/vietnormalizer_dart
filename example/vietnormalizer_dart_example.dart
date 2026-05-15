@@ -2,9 +2,9 @@ import 'package:vietnormalizer_dart/vietnormalizer_dart.dart';
 
 void main() {
   // ------------------------------------------------------------------
-  // 1. Sync usage — no CSV dictionary, rule-based transliteration only
+  // 1. Singleton — bundled dictionaries, rule-based transliteration
   // ------------------------------------------------------------------
-  final basic = VietnameseNormalizer(enableTransliteration: true);
+  final basic = VietnameseNormalizer.instance;
 
   print(basic.normalize('Hôm nay là 25/12/2023'));
   // → hôm nay là ngày hai mươi lăm tháng mười hai năm hai nghìn không trăm hai mươi ba
@@ -21,7 +21,7 @@ void main() {
   // ------------------------------------------------------------------
   // 2. Inline dictionaries
   // ------------------------------------------------------------------
-  final withDict = VietnameseNormalizer(
+  final withDict = VietnameseNormalizer.custom(
     acronymMap: {'ubnd': 'ủy ban nhân dân', 'tv': 'ti vi'},
     nonVietnameseMap: {'container': 'công-tê-nơ'},
     enableTransliteration: false,
@@ -34,9 +34,9 @@ void main() {
   // → chiếc công-tê-nơ này
 
   // ------------------------------------------------------------------
-  // 3. Default constructor — bundled dictionaries loaded automatically
+  // 3. Singleton — same instance as above
   // ------------------------------------------------------------------
-  final full = VietnameseNormalizer();
+  final full = VietnameseNormalizer.instance;
   print(full.normalize('container'));
   // → công-tê-nơ  (from bundled non-vietnamese-words dictionary)
 

@@ -210,7 +210,7 @@ void main() {
     late VietnameseNormalizer normalizer;
 
     setUpAll(() {
-      normalizer = VietnameseNormalizer(enableTransliteration: true);
+      normalizer = VietnameseNormalizer.instance;
     });
 
     test('date is expanded', () {
@@ -248,7 +248,7 @@ void main() {
     late VietnameseNormalizer normalizer;
 
     setUpAll(() {
-      normalizer = VietnameseNormalizer(
+      normalizer = VietnameseNormalizer.custom(
         acronymMap: {'ubnd': 'ủy ban nhân dân', 'tv': 'ti vi', 'ai': 'ây ai'},
         nonVietnameseMap: {'container': 'công-tê-nơ', 'singapore': 'xin-ga-po'},
         enableTransliteration: false,

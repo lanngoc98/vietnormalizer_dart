@@ -53,6 +53,8 @@ final RegExp _wordBoundaryRegex = RegExp(r'[\wÀ-ỿ]+');
 final RegExp _uppercaseCodePattern = RegExp(r'\b([A-Z][A-Z0-9]+)\b');
 
 class VietnameseNormalizer {
+  static final VietnameseNormalizer instance = VietnameseNormalizer._();
+
   final VietnameseTextProcessor _processor;
   final bool enableTransliteration;
 
@@ -65,7 +67,16 @@ class VietnameseNormalizer {
   // Built from nonVietnameseMap — lowercase key lookup.
   late final Map<String, String> _replacements;
 
-  VietnameseNormalizer({
+  VietnameseNormalizer._()
+    : _processor = VietnameseTextProcessor(),
+      enableTransliteration = true,
+      acronymMap = acronym_data.acronyms,
+      nonVietnameseMap = non_vietnamese_data.nonVietnameseWords {
+    _buildReplacementDict();
+  }
+
+  /// Creates an instance with custom dictionaries or settings.
+  VietnameseNormalizer.custom({
     Map<String, String>? acronymMap,
     Map<String, String>? nonVietnameseMap,
     this.enableTransliteration = true,
