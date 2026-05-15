@@ -18,19 +18,45 @@ void main() {
       test('single digit', () => expect(processor.numberToWords('7'), 'bảy'));
       test('teens', () => expect(processor.numberToWords('15'), 'mười lăm'));
       test('tens', () => expect(processor.numberToWords('20'), 'hai mươi'));
-      test('tens + units', () => expect(processor.numberToWords('21'), 'hai mươi mốt'));
-      test('tens + 4', () => expect(processor.numberToWords('24'), 'hai mươi tư'));
-      test('hundreds', () => expect(processor.numberToWords('100'), 'một trăm'));
-      test('hundreds with remainder < 10', () => expect(processor.numberToWords('105'), 'một trăm lẻ năm'));
-      test('thousands', () => expect(processor.numberToWords('1000'), 'một nghìn'));
-      test('millions', () => expect(processor.numberToWords('1000000'), 'một triệu'));
-      test('billions', () => expect(processor.numberToWords('1000000000'), 'một tỷ'));
+      test(
+        'tens + units',
+        () => expect(processor.numberToWords('21'), 'hai mươi mốt'),
+      );
+      test(
+        'tens + 4',
+        () => expect(processor.numberToWords('24'), 'hai mươi tư'),
+      );
+      test(
+        'hundreds',
+        () => expect(processor.numberToWords('100'), 'một trăm'),
+      );
+      test(
+        'hundreds with remainder < 10',
+        () => expect(processor.numberToWords('105'), 'một trăm lẻ năm'),
+      );
+      test(
+        'thousands',
+        () => expect(processor.numberToWords('1000'), 'một nghìn'),
+      );
+      test(
+        'millions',
+        () => expect(processor.numberToWords('1000000'), 'một triệu'),
+      );
+      test(
+        'billions',
+        () => expect(processor.numberToWords('1000000000'), 'một tỷ'),
+      );
     });
 
     group('date normalization', () {
       test('full date DD/MM/YYYY', () {
         final result = processor.processVietnameseText('Hôm nay là 25/12/2023');
-        expect(result, contains('ngày hai mươi lăm tháng mười hai năm hai nghìn không trăm hai mươi ba'));
+        expect(
+          result,
+          contains(
+            'ngày hai mươi lăm tháng mười hai năm hai nghìn không trăm hai mươi ba',
+          ),
+        );
       });
 
       test('date with slashes DD/MM/YYYY', () {
@@ -40,7 +66,10 @@ void main() {
 
       test('month/year MM/YYYY', () {
         final result = processor.processVietnameseText('tháng 12/2023');
-        expect(result, contains('tháng mười hai năm hai nghìn không trăm hai mươi ba'));
+        expect(
+          result,
+          contains('tháng mười hai năm hai nghìn không trăm hai mươi ba'),
+        );
       });
     });
 
@@ -220,15 +249,8 @@ void main() {
 
     setUpAll(() {
       normalizer = VietnameseNormalizer(
-        acronymMap: {
-          'ubnd': 'ủy ban nhân dân',
-          'tv': 'ti vi',
-          'ai': 'ây ai',
-        },
-        nonVietnameseMap: {
-          'container': 'công-tê-nơ',
-          'singapore': 'xin-ga-po',
-        },
+        acronymMap: {'ubnd': 'ủy ban nhân dân', 'tv': 'ti vi', 'ai': 'ây ai'},
+        nonVietnameseMap: {'container': 'công-tê-nơ', 'singapore': 'xin-ga-po'},
         enableTransliteration: false,
       );
     });

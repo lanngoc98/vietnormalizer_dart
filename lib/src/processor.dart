@@ -7,19 +7,40 @@ library;
 
 class VietnameseTextProcessor {
   static const Map<String, String> digits = {
-    '0': 'không', '1': 'một', '2': 'hai', '3': 'ba', '4': 'bốn',
-    '5': 'năm', '6': 'sáu', '7': 'bảy', '8': 'tám', '9': 'chín',
+    '0': 'không',
+    '1': 'một',
+    '2': 'hai',
+    '3': 'ba',
+    '4': 'bốn',
+    '5': 'năm',
+    '6': 'sáu',
+    '7': 'bảy',
+    '8': 'tám',
+    '9': 'chín',
   };
 
   static const Map<String, String> teens = {
-    '10': 'mười', '11': 'mười một', '12': 'mười hai', '13': 'mười ba',
-    '14': 'mười bốn', '15': 'mười lăm', '16': 'mười sáu', '17': 'mười bảy',
-    '18': 'mười tám', '19': 'mười chín',
+    '10': 'mười',
+    '11': 'mười một',
+    '12': 'mười hai',
+    '13': 'mười ba',
+    '14': 'mười bốn',
+    '15': 'mười lăm',
+    '16': 'mười sáu',
+    '17': 'mười bảy',
+    '18': 'mười tám',
+    '19': 'mười chín',
   };
 
   static const Map<String, String> tens = {
-    '2': 'hai mươi', '3': 'ba mươi', '4': 'bốn mươi', '5': 'năm mươi',
-    '6': 'sáu mươi', '7': 'bảy mươi', '8': 'tám mươi', '9': 'chín mươi',
+    '2': 'hai mươi',
+    '3': 'ba mươi',
+    '4': 'bốn mươi',
+    '5': 'năm mươi',
+    '6': 'sáu mươi',
+    '7': 'bảy mươi',
+    '8': 'tám mươi',
+    '9': 'chín mươi',
   };
 
   static const Map<String, String> unitMap = {
@@ -55,12 +76,24 @@ class VietnameseTextProcessor {
   };
 
   static const Map<String, int> _romanValues = {
-    'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100,
+    'I': 1,
+    'V': 5,
+    'X': 10,
+    'L': 50,
+    'C': 100,
   };
 
   static const Map<String, String> _ordinalMap = {
-    '1': 'nhất', '2': 'hai', '3': 'ba', '4': 'tư', '5': 'năm',
-    '6': 'sáu', '7': 'bảy', '8': 'tám', '9': 'chín', '10': 'mười',
+    '1': 'nhất',
+    '2': 'hai',
+    '3': 'ba',
+    '4': 'tư',
+    '5': 'năm',
+    '6': 'sáu',
+    '7': 'bảy',
+    '8': 'tám',
+    '9': 'chín',
+    '10': 'mười',
   };
 
   late final RegExp _emojiPattern;
@@ -132,7 +165,10 @@ class VietnameseTextProcessor {
     // Time: \d{1,2}:\d{2} or with seconds
     _timeHmsPattern = RegExp(r'(\d{1,2}):(\d{2})(?::(\d{2}))?');
     // Time: 14h30 — negative lookahead for Vietnamese/Latin chars
-    _timeHhmmPattern = RegExp(r'(\d{1,2})h(\d{2})(?![a-zÀ-ỿ])', caseSensitive: false);
+    _timeHhmmPattern = RegExp(
+      r'(\d{1,2})h(\d{2})(?![a-zÀ-ỿ])',
+      caseSensitive: false,
+    );
     _timeHPattern = RegExp(r'(\d{1,2})h(?![a-zÀ-ỿ\d])', caseSensitive: false);
     _timeGiophutPattern = RegExp(r'(\d+)\s*giờ\s*(\d+)\s*phút');
     _timeGioPattern = RegExp(r'(\d+)\s*giờ(?!\s*\d)');
@@ -144,11 +180,19 @@ class VietnameseTextProcessor {
     _dateRangePattern = RegExp(
       r'(\d{1,2})\s*[-–—]\s*(\d{1,2})\s*[/\-]\s*(\d{1,2})(?:\s*[/\-]\s*(\d{4}))?',
     );
-    _monthRangePattern = RegExp(r'(\d{1,2})\s*[-–—]\s*(\d{1,2})\s*[/\-]\s*(\d{4})');
-    _dateSinhPattern = RegExp(r'(Sinh|sinh)\s+ngày\s+(\d{1,2})[/\-](\d{1,2})[/\-](\d{4})');
+    _monthRangePattern = RegExp(
+      r'(\d{1,2})\s*[-–—]\s*(\d{1,2})\s*[/\-]\s*(\d{4})',
+    );
+    _dateSinhPattern = RegExp(
+      r'(Sinh|sinh)\s+ngày\s+(\d{1,2})[/\-](\d{1,2})[/\-](\d{4})',
+    );
     _dateFullPattern = RegExp(r'(\d{1,2})[/\-](\d{1,2})[/\-](\d{4})');
-    _dateMonthYearPattern = RegExp(r'(?:tháng\s+)?(\d{1,2})\s*[/\-]\s*(\d{4})(?![/\-]\d)');
-    _dateDayMonthPattern = RegExp(r'(\d{1,2})\s*[/\-]\s*(\d{1,2})(?![/\-]\d)(?!\d+\s*%)');
+    _dateMonthYearPattern = RegExp(
+      r'(?:tháng\s+)?(\d{1,2})\s*[/\-]\s*(\d{4})(?![/\-]\d)',
+    );
+    _dateDayMonthPattern = RegExp(
+      r'(\d{1,2})\s*[/\-]\s*(\d{1,2})(?![/\-]\d)(?!\d+\s*%)',
+    );
     _dateXThangYPattern = RegExp(r'(\d+)\s*tháng\s*(\d+)');
     _dateThangXPattern = RegExp(r'tháng\s*(\d+)');
     _dateNgayXPattern = RegExp(r'ngày\s*(\d+)');
@@ -163,7 +207,10 @@ class VietnameseTextProcessor {
       caseSensitive: false,
     );
     _currencyUsdPattern1 = RegExp(r'\$\s*(\d+(?:,\d+)?)');
-    _currencyUsdPattern2 = RegExp(r'(\d+(?:,\d+)?)\s*(?:USD|\$)', caseSensitive: false);
+    _currencyUsdPattern2 = RegExp(
+      r'(\d+(?:,\d+)?)\s*(?:USD|\$)',
+      caseSensitive: false,
+    );
 
     _yearRangePattern = RegExp(r'(\d{4})\s*[-–—]\s*(\d{4})');
 
@@ -197,9 +244,7 @@ class VietnameseTextProcessor {
       final RegExp pattern;
       if (unit.length == 1) {
         pattern = RegExp(
-          r'(\d+)\s*' +
-              escaped +
-              r'(?!\s*[a-zA-ZÀ-ỿ])(?=\s*[^a-zA-ZÀ-ỿ]|$)',
+          r'(\d+)\s*' + escaped + r'(?!\s*[a-zA-ZÀ-ỿ])(?=\s*[^a-zA-ZÀ-ỿ]|$)',
           caseSensitive: false,
         );
       } else {
@@ -298,7 +343,10 @@ class VietnameseTextProcessor {
 
   /// Removes thousand separators (dots) from numbers like 1.000.000.
   String removeThousandSeparators(String text) {
-    return text.replaceAllMapped(_thousandSepPattern, (m) => m.group(0)!.replaceAll('.', ''));
+    return text.replaceAllMapped(
+      _thousandSepPattern,
+      (m) => m.group(0)!.replaceAll('.', ''),
+    );
   }
 
   /// Converts decimal numbers: 7,27 → bảy phẩy hai mươi bảy.
@@ -407,7 +455,12 @@ class VietnameseTextProcessor {
       final mo = int.parse(month);
       if (year != null) {
         final y = int.parse(year);
-        return d >= 1 && d <= 31 && mo >= 1 && mo <= 12 && y >= 1000 && y <= 9999;
+        return d >= 1 &&
+            d <= 31 &&
+            mo >= 1 &&
+            mo <= 12 &&
+            y >= 1000 &&
+            y <= 9999;
       }
       return d >= 1 && d <= 31 && mo >= 1 && mo <= 12;
     }
@@ -457,7 +510,10 @@ class VietnameseTextProcessor {
 
     // Sinh ngày DD/MM/YYYY
     text = text.replaceAllMapped(_dateSinhPattern, (m) {
-      final prefix = m.group(1)!, day = m.group(2)!, month = m.group(3)!, year = m.group(4)!;
+      final prefix = m.group(1)!,
+          day = m.group(2)!,
+          month = m.group(3)!,
+          year = m.group(4)!;
       if (isValidDate(day, month, year)) {
         return '$prefix ngày ${numberToWords(day)} tháng ${numberToWords(month)} năm ${numberToWords(year)}';
       }
@@ -549,13 +605,18 @@ class VietnameseTextProcessor {
   /// Converts measurement units to Vietnamese names.
   String convertMeasurementUnits(String text) {
     for (final (unit, pattern) in _unitPatterns) {
-      text = text.replaceAllMapped(pattern, (m) => '${m.group(1)!} ${unitMap[unit]!}');
+      text = text.replaceAllMapped(
+        pattern,
+        (m) => '${m.group(1)!} ${unitMap[unit]!}',
+      );
     }
     return text;
   }
 
   int _romanToInt(String s) {
-    if (s.isEmpty || !s.split('').every((c) => _romanValues.containsKey(c))) return -1;
+    if (s.isEmpty || !s.split('').every((c) => _romanValues.containsKey(c))) {
+      return -1;
+    }
     var total = 0;
     var prev = 0;
     for (final c in s.split('').reversed) {
@@ -601,7 +662,10 @@ class VietnameseTextProcessor {
 
   /// Converts remaining standalone numbers to words.
   String convertStandaloneNumbers(String text) {
-    return text.replaceAllMapped(_standaloneNumberPattern, (m) => numberToWords(m.group(0)!));
+    return text.replaceAllMapped(
+      _standaloneNumberPattern,
+      (m) => numberToWords(m.group(0)!),
+    );
   }
 
   /// Removes or replaces special characters that can't be spoken.

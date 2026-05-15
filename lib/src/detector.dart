@@ -10,17 +10,50 @@ class VnLanguageDetector {
   );
 
   static final Set<String> _vnOnsets = {
-    'b', 'c', 'd', 'đ', 'g', 'h', 'k', 'l', 'm', 'n', 'p', 'q',
-    'r', 's', 't', 'v', 'x',
-    'ch', 'gh', 'gi', 'kh', 'ng', 'nh', 'ph', 'qu', 'th', 'tr',
+    'b',
+    'c',
+    'd',
+    'đ',
+    'g',
+    'h',
+    'k',
+    'l',
+    'm',
+    'n',
+    'p',
+    'q',
+    'r',
+    's',
+    't',
+    'v',
+    'x',
+    'ch',
+    'gh',
+    'gi',
+    'kh',
+    'ng',
+    'nh',
+    'ph',
+    'qu',
+    'th',
+    'tr',
   };
 
   static final Set<String> _vnEndings = {
-    'p', 't', 'c', 'm', 'n', 'ng', 'ch', 'nh',
+    'p',
+    't',
+    'c',
+    'm',
+    'n',
+    'ng',
+    'ch',
+    'nh',
   };
 
   static final RegExp _enSpecialChars = RegExp(r'[fwzj]', caseSensitive: false);
-  static final RegExp _syllableRegex = RegExp(r'^([^ueoaiy]*)([ueoaiy]+)([^ueoaiy]*)$');
+  static final RegExp _syllableRegex = RegExp(
+    r'^([^ueoaiy]*)([ueoaiy]+)([^ueoaiy]*)$',
+  );
   static final RegExp _englishVowelClusters = RegExp(r'ee|oo|ea|ae|ie');
   static final Set<String> _allowedVowelClusters = {'oa', 'oe', 'ua', 'uy'};
 
