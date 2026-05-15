@@ -10,20 +10,39 @@
 /// 6. Transliterate remaining non-Vietnamese words (rule-based)
 library;
 
-import 'dart:io';
-import 'dart:isolate';
-
 import 'processor.dart';
 import 'detector.dart';
 import 'transliterator.dart';
+import 'acronyms.dart' as acronym_data;
+import 'non_vietnamese_words.dart' as non_vietnamese_data;
 
 /// Maps a letter (A-Z) to its Vietnamese spoken name.
 const Map<String, String> letterNames = {
-  'A': 'a', 'B': 'bê', 'C': 'xê', 'D': 'đê', 'E': 'ê',
-  'F': 'ép', 'G': 'giê', 'H': 'hát', 'I': 'i', 'J': 'giây',
-  'K': 'ca', 'L': 'e-lờ', 'M': 'em', 'N': 'en', 'O': 'o',
-  'P': 'pê', 'Q': 'cu', 'R': 'e-rờ', 'S': 'ét', 'T': 'tê',
-  'U': 'u', 'V': 'vê', 'W': 'vê kép', 'X': 'ích', 'Y': 'i',
+  'A': 'a',
+  'B': 'bê',
+  'C': 'xê',
+  'D': 'đê',
+  'E': 'ê',
+  'F': 'ép',
+  'G': 'giê',
+  'H': 'hát',
+  'I': 'i',
+  'J': 'giây',
+  'K': 'ca',
+  'L': 'e-lờ',
+  'M': 'em',
+  'N': 'en',
+  'O': 'o',
+  'P': 'pê',
+  'Q': 'cu',
+  'R': 'e-rờ',
+  'S': 'ét',
+  'T': 'tê',
+  'U': 'u',
+  'V': 'vê',
+  'W': 'vê kép',
+  'X': 'ích',
+  'Y': 'i',
   'Z': 'dét',
 };
 
@@ -50,9 +69,10 @@ class VietnameseNormalizer {
     Map<String, String>? acronymMap,
     Map<String, String>? nonVietnameseMap,
     this.enableTransliteration = true,
-  })  : _processor = VietnameseTextProcessor(),
-        acronymMap = acronymMap ?? {},
-        nonVietnameseMap = nonVietnameseMap ?? {} {
+  }) : _processor = VietnameseTextProcessor(),
+       acronymMap = acronymMap ?? acronym_data.acronyms,
+       nonVietnameseMap =
+           nonVietnameseMap ?? non_vietnamese_data.nonVietnameseWords {
     _buildReplacementDict();
   }
 
@@ -60,137 +80,6 @@ class VietnameseNormalizer {
     _replacements = {
       for (final e in nonVietnameseMap.entries) e.key.toLowerCase(): e.value,
     };
-  }
-
-  // ---------------------------------------------------------------------------
-  // Static factories
-  // ---------------------------------------------------------------------------
-
-  /// Creates a normalizer by loading CSV data from [acronymsPath] and
-  /// [nonVietnameseWordsPath]. If paths are omitted, tries to locate the
-  /// bundled data files via the package URI.
-  static Future<VietnameseNormalizer> create({
-    String? acronymsPath,
-    String? nonVietnameseWordsPath,
-    bool enableTransliteration = true,
-  }) async {
-    String? resolvedAcronyms = acronymsPath;
-    String? resolvedWords = nonVietnameseWordsPath;
-
-    if (resolvedAcronyms == null || resolvedWords == null) {
-      final dataDir = await _findBundledDataDir();
-      resolvedAcronyms ??= dataDir != null ? '$dataDir/acronyms.csv' : null;
-      resolvedWords ??= dataDir != null ? '$dataDir/non-vietnamese-words.csv' : null;
-    }
-
-    final acMap = resolvedAcronyms != null ? await _loadCsvFile(resolvedAcronyms, isAcronym: true) : <String, String>{};
-    final wMap = resolvedWords != null ? await _loadCsvFile(resolvedWords, isAcronym: false) : <String, String>{};
-
-    return VietnameseNormalizer(
-      acronymMap: acMap,
-      nonVietnameseMap: wMap,
-      enableTransliteration: enableTransliteration,
-    );
-  }
-
-  /// Creates a normalizer by loading CSV data from explicit file paths.
-  static Future<VietnameseNormalizer> fromFiles({
-    required String acronymsPath,
-    required String nonVietnameseWordsPath,
-    bool enableTransliteration = true,
-  }) async {
-    final acMap = await _loadCsvFile(acronymsPath, isAcronym: true);
-    final wMap = await _loadCsvFile(nonVietnameseWordsPath, isAcronym: false);
-    return VietnameseNormalizer(
-      acronymMap: acMap,
-      nonVietnameseMap: wMap,
-      enableTransliteration: enableTransliteration,
-    );
-  }
-
-  // ---------------------------------------------------------------------------
-  // CSV helpers
-  // ---------------------------------------------------------------------------
-
-  /// Tries to resolve the bundled `lib/data/` directory via package URI.
-  static Future<String?> _findBundledDataDir() async {
-    try {
-      final uri = await Isolate.resolvePackageUri(
-        Uri.parse('package:vietnormalizer_dart/data/'),
-      );
-      if (uri == null) return null;
-      final path = uri.toFilePath();
-      if (Directory(path).existsSync()) return path.endsWith('/') ? path.substring(0, path.length - 1) : path;
-    } catch (_) {}
-    return null;
-  }
-
-  static Future<Map<String, String>> _loadCsvFile(String path, {required bool isAcronym}) async {
-    try {
-      final file = File(path);
-      if (!file.existsSync()) return {};
-      final content = await file.readAsString();
-      return _parseCsv(content, isAcronym: isAcronym);
-    } catch (_) {
-      return {};
-    }
-  }
-
-  static Map<String, String> _parseCsv(String content, {required bool isAcronym}) {
-    final map = <String, String>{};
-    final lines = content.split('\n');
-    if (lines.isEmpty) return map;
-
-    final header = _splitCsvLine(lines[0]);
-    var wordIdx = -1;
-    var pronIdx = -1;
-
-    for (var i = 0; i < header.length; i++) {
-      final col = header[i].trim().toLowerCase();
-      if (col == 'acronym' || col == 'word' || col == 'original') wordIdx = i;
-      if (col == 'transliteration' || col == 'vietnamese_pronunciation') pronIdx = i;
-    }
-
-    if (wordIdx == -1 || pronIdx == -1) return map;
-    final maxIdx = wordIdx > pronIdx ? wordIdx : pronIdx;
-
-    for (var i = 1; i < lines.length; i++) {
-      final line = lines[i].trim();
-      if (line.isEmpty) continue;
-      final parts = _splitCsvLine(line);
-      if (parts.length > maxIdx) {
-        final word = parts[wordIdx].trim().toLowerCase();
-        final pron = parts[pronIdx].trim();
-        if (word.isNotEmpty && pron.isNotEmpty) {
-          map[word] = pron;
-        }
-      }
-    }
-
-    // Sort by key length descending so longer keys are tried first
-    final sortedEntries = map.entries.toList()
-      ..sort((a, b) => b.key.length.compareTo(a.key.length));
-    return Map.fromEntries(sortedEntries);
-  }
-
-  static List<String> _splitCsvLine(String line) {
-    final result = <String>[];
-    final current = StringBuffer();
-    var inQuotes = false;
-
-    for (var i = 0; i < line.length; i++) {
-      final c = line[i];
-      if (c == '"') {
-        inQuotes = !inQuotes;
-      } else if (c == ',' && !inQuotes) {
-        result.add(current.toString());
-        current.clear();
-      } else {
-        current.write(c);
-      }
-    }
-    result.add(current.toString());
-    return result;
   }
 
   // ---------------------------------------------------------------------------
@@ -267,7 +156,8 @@ class VietnameseNormalizer {
         if (matchedWord.isNotEmpty &&
             matchedWord[0] != matchedWord[0].toLowerCase()) {
           // First character is uppercase — capitalise transliteration
-          result = transliterated[0].toUpperCase() +
+          result =
+              transliterated[0].toUpperCase() +
               (transliterated.length > 1 ? transliterated.substring(1) : '');
         } else {
           result = transliterated;
@@ -323,18 +213,5 @@ class VietnameseNormalizer {
     }
 
     return normalized.replaceAll(RegExp(r'\s+'), ' ').trim();
-  }
-
-  /// Reloads dictionaries from the given CSV paths (or re-discovers bundled
-  /// files if paths are omitted). Returns a new normalizer instance.
-  Future<VietnameseNormalizer> reloadDictionaries({
-    String? acronymsPath,
-    String? nonVietnameseWordsPath,
-  }) {
-    return VietnameseNormalizer.create(
-      acronymsPath: acronymsPath,
-      nonVietnameseWordsPath: nonVietnameseWordsPath,
-      enableTransliteration: enableTransliteration,
-    );
   }
 }

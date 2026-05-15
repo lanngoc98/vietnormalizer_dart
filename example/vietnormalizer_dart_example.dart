@@ -1,6 +1,6 @@
 import 'package:vietnormalizer_dart/vietnormalizer_dart.dart';
 
-void main() async {
+void main() {
   // ------------------------------------------------------------------
   // 1. Sync usage — no CSV dictionary, rule-based transliteration only
   // ------------------------------------------------------------------
@@ -18,20 +18,12 @@ void main() async {
   print(basic.normalize('50%'));
   // → năm mươi phần trăm
 
-  print(basic.normalize('AI'));
-  // → ây i  (spelled out: A=ây, I=i)
-
   // ------------------------------------------------------------------
   // 2. Inline dictionaries
   // ------------------------------------------------------------------
   final withDict = VietnameseNormalizer(
-    acronymMap: {
-      'ubnd': 'ủy ban nhân dân',
-      'tv': 'ti vi',
-    },
-    nonVietnameseMap: {
-      'container': 'công-tê-nơ',
-    },
+    acronymMap: {'ubnd': 'ủy ban nhân dân', 'tv': 'ti vi'},
+    nonVietnameseMap: {'container': 'công-tê-nơ'},
     enableTransliteration: false,
   );
 
@@ -42,12 +34,11 @@ void main() async {
   // → chiếc công-tê-nơ này
 
   // ------------------------------------------------------------------
-  // 3. Async factory — loads bundled CSV files automatically
+  // 3. Default constructor — bundled dictionaries loaded automatically
   // ------------------------------------------------------------------
-  // (bundled CSV files are in lib/data/ within the package)
-  final full = await VietnameseNormalizer.create();
+  final full = VietnameseNormalizer();
   print(full.normalize('container'));
-  // → công-tê-nơ  (from non-vietnamese-words.csv)
+  // → công-tê-nơ  (from bundled non-vietnamese-words dictionary)
 
   // ------------------------------------------------------------------
   // 4. Lower-level APIs
@@ -56,7 +47,7 @@ void main() async {
   print(processor.numberToWords('1234567'));
   // → một triệu hai trăm ba mươi bốn nghìn năm trăm sáu mươi bảy
 
-  print(isVietnameseWord('tôi'));   // true
+  print(isVietnameseWord('tôi')); // true
   print(isVietnameseWord('hello')); // false
 
   print(transliterateWord('software'));
