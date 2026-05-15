@@ -79,6 +79,11 @@ class VietnameseNormalizer {
   VietnameseNormalizer.custom({
     Map<String, String>? acronymMap,
     Map<String, String>? nonVietnameseMap,
+
+    /// When true, non-Vietnamese words not found in [nonVietnameseMap] are
+    /// automatically converted to Vietnamese phonetics via rule-based
+    /// transliteration. Set to false to skip this step and leave unknown
+    /// foreign words unchanged.
     this.enableTransliteration = true,
   }) : _processor = VietnameseTextProcessor(),
        acronymMap = acronymMap ?? acronym_data.acronyms,
