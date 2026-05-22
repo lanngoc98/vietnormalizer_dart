@@ -6,6 +6,12 @@ void main() {
   // ------------------------------------------------------------------
   final basic = VietnameseNormalizer.instance;
 
+  print(
+    basic.normalize(
+      '2 chữ này nghe nhiều mà đọc sai nhiều thấy khó chịu quá, ca dao tục ngữ',
+    ),
+  );
+
   print(basic.normalize('Hôm nay là 25/12/2023'));
   // → hôm nay là ngày hai mươi lăm tháng mười hai năm hai nghìn không trăm hai mươi ba
 

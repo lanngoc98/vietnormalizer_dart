@@ -176,6 +176,11 @@ void main() {
       expect(detector.isVietnameseWord('ban'), isTrue);
     });
 
+    test('plain ASCII syllable with ngh onset is Vietnamese', () {
+      expect(detector.isVietnameseWord('nghe'), isTrue);
+      expect(detector.isVietnameseWord('nghi'), isTrue);
+    });
+
     test('typical English word is not Vietnamese', () {
       expect(detector.isVietnameseWord('computer'), isFalse);
     });
@@ -238,6 +243,16 @@ void main() {
       final result = normalizer.normalize('  hello   world  ');
       expect(result.contains('  '), isFalse);
     });
+
+    test('Vietnamese words are not overwritten by non-Vietnamese dictionary', () {
+      final result = normalizer.normalize(
+        '2 chữ này nghe nhiều mà đọc sai nhiều thấy khó chịu quá, ca dao tục ngữ',
+      );
+      expect(
+        result,
+        'hai chữ này nghe nhiều mà đọc sai nhiều thấy khó chịu quá, ca dao tục ngữ',
+      );
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -281,6 +296,23 @@ void main() {
         enablePreprocessing: false,
       );
       expect(result, 'công-tê-nơ');
+    });
+
+    test('dictionary replacement skips valid Vietnamese syllables', () {
+      final normalizer = VietnameseNormalizer.custom(
+        acronymMap: const {},
+        nonVietnameseMap: {
+          'nghe': 'nghê',
+          'dao': 'đao',
+          'container': 'công-tê-nơ',
+        },
+        enableTransliteration: false,
+      );
+
+      expect(
+        normalizer.normalize('nghe ca dao trong container'),
+        'nghe ca dao trong công-tê-nơ',
+      );
     });
   });
 }

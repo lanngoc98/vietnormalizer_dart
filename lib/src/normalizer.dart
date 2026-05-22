@@ -214,8 +214,12 @@ class VietnameseNormalizer {
     if (_replacements.isNotEmpty) {
       normalized = normalized.replaceAllMapped(RegExp(r'\b\w+\b'), (m) {
         final word = m.group(0)!;
-        final replacement = _replacements[word.toLowerCase()];
+        final wordLower = word.toLowerCase();
+        final replacement = _replacements[wordLower];
         if (replacement == null) {
+          return word;
+        }
+        if (isVietnameseWord(word) || isVietnameseWord(wordLower)) {
           return word;
         }
         if (word[0] != word[0].toLowerCase()) {

@@ -32,6 +32,7 @@ class VnLanguageDetector {
     'gi',
     'kh',
     'ng',
+    'ngh',
     'nh',
     'ph',
     'qu',
